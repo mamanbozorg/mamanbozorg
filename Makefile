@@ -6,38 +6,49 @@ BIN_MAIN  := mamanbozorg.py
 
 UNAME     := $(uname)
 
+.PHONY: default
+default: sanity install run
+
+
+.PHONY: run
 run: ${BIN_MAIN}
 	@. extern/venv/bin/activate && python $<
 
-install: prepare extern
+
+.PHONY: install
+install: prepare
 	@. extern/venv/bin/activate && pip install flask
 
-prepare:
+.PHONY: sanity
+sanity:
+#ifeq (${BIN_NPM},)
+#	@$(error "Missing Node Package Manager (npm)")
+#endif
+	@echo "Sanity check complete"
+
+
+.PHONY: prepare
+prepare: extern
 	@mkdir -p extern
-ifeq (${UNAME},Darwin)
-ifeq (${BIN_NPM},)
-	@brew install npm
-endif
-endif
-ifeq (${UNAME},)
-endif
+#ifeq (${BIN_BOWER},)
+#	@npm install -g bower
+#endif
+	@echo "Preparation complete"
 
-ifeq (${BIN_BOWER},)
-	@npm install -g bower
-endif
 
-extern: extern/venv extern/bower_components/bootstrap
+.PHONY: extern
+extern: extern/venv
 
 extern/venv:
 	@virtualenv $@
 
-extern/bower_components/bootstrap: extern
+extern/bower_components/bootstrap:
 	@cd extern && bower install bootstrap
 
-extern/bootstrap: extern
+extern/bootstrap:
 	@cd extern && git clone -q https://github.com/twbs/bootstrap.git
 
-purge:
-	rm -rf extern
 
-.PHONY: extern
+.PHONY: purge
+purge:
+	@rm -rf extern
