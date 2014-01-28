@@ -1,0 +1,95 @@
+[merge]
+	tool = vimdiff
+[user]
+	name = Nima Talebi
+	email = nima@it.net.au
+[core]
+	editor = vim +1
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+[push]
+    #. You did not specify any refspecs to push, and the current remote
+    #. has not configured any push refspecs. The default action in this
+    #. case is to push all matching refspecs, that is, all branches
+    #. that exist both locally and remotely will be updated.  This may
+    #. not necessarily be what you want to happen.
+    #.
+    #. You can specify what action you want to take in this case, and
+    #. avoid seeing this message again, by configuring 'push.default' to:
+    #.   'nothing'  : Do not push anything
+    #.   'matching' : Push all matching branches (default)
+    #.   'tracking' : Push the current branch to whatever it is tracking
+    #.   'current'  : Push the current branch
+    default = matching
+[alias]
+    #. http://gitready.com/advanced/2011/10/21/ribbon-and-catchup-reading-new-commits.html
+    ribbon = tag --force _ribbon origin/master
+    catchup = log --patch --reverse --topo-order _ribbon..origin/master
+    catchup2 = log --patch --reverse --topo-order --first-parent -m _ribbon..origin/master
+
+    vp = !"git verify-pack -v .git/objects/pack/pack-*.idx|grep -E '^[a-f0-9]{40}'"
+
+    b       = log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold white)— %an%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative
+    bb      = log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)— %an%C(reset)' --abbrev-commit
+
+    l       = log        --graph --abbrev-commit --pretty=oneline --decorate
+    ll      = log --stat --graph --abbrev-commit --pretty=oneline --decorate
+	lll     = log --stat --graph --abbrev-commit --pretty=short   --decorate
+	llll    = log --stat --graph --abbrev-commit --pretty=medium  --decorate
+	lllll   = log --stat --graph --abbrev-commit --pretty=full    --decorate
+	llllll  = log --stat --graph --abbrev-commit --pretty=fuller  --decorate
+	lllllll = log --stat --graph --abbrev-commit --pretty=fuller  --decorate -p
+    last    = log -1 HEAD
+    dump    = log -p -1
+
+    serve   = !"f(){ git daemon --export-all --base-path=$(pwd)/.git/; }; f"
+    #search  = log -S"important phrase" -p --
+
+    #. {{
+    delete1 = filter-branch -f --index-filter "git update-index --remove $1" HEAD
+    delete2 = !"f(){\
+        git filter-branch -d /dev/shm/wmii/tmp --tree-filter \"rm -f $1\" HEAD;\
+    }; f"
+    deleted = log --abbrev-commit --pretty=oneline --decorate --diff-filter=D --summary
+
+    dummy  = "!f(){\
+        git filter-branch -d /dev/shm/wmii/tmp --commit-filter 'git commit-tree \"$@\"' HEAD;\
+    }; f"
+
+    squish  = "!f(){ git rebase -i ${1}^ && git reset --mixed HEAD^; }; f"
+
+    r       = reflog --decorate
+    rr      = log -g --decorate
+
+    atp     = diff --stat origin/master
+    atpp    = log origin/master..HEAD #. about to push
+    atppp   = log HEAD..origin/master #. about to pull
+
+    co      = checkout
+    br      = branch -av
+    ci      = commit
+    s       = status -s
+    st      = status
+    cl      = clone
+    rp      = rev-parse master
+    rmci    = rebase --onto $1^ $1 HEAD
+
+    clean1  = stash -u -a
+    clean2  = clean -dnx
+
+    whois   = log --stat -i -1 --pretty=format:"%an <%ae>\n" --author="$1"
+    rlog    = log --stat -p -2
+    whatis  = show -s --pretty='tformat:%h (%s, %ad)' --date=short
+    lrm     = rm --cached --
+    sdiff   = diff --staged --
+
+    unstage = reset HEAD --
+    revert  = checkout --
+
+    bmy     = branch --merged
+    bmn     = branch --no-merged #. can't delete these as they've not been merged
+
+    ver     = rev-parse --short HEAD
+    version = log -1 --pretty=format:%H
